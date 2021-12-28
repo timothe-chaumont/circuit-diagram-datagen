@@ -1,1 +1,1 @@
-# image-to-latex
+# circuit-to-latex
