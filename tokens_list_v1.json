@@ -1,8 +1,0 @@
-{
-    "electric components" : [
-        { "resistive bipoles" : [ "short", "open", "generic" ] }, 
-        { "cacitors & inductors" : ["capacitor", "cute inductor"] },
-        { "sources & generators": ["battery1", "european voltage source", "european current source"] },
-        { "instruments": ["ammeter", "voltmeter"] }
-    ]
-}
