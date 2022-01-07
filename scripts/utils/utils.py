@@ -15,3 +15,16 @@ def create_dictionnaries(tokens):
     token_to_idx = {t: i for i, t in enumerate(tokens)}
     idx_to_token = {i: t for i, t in enumerate(tokens)}
     return token_to_idx, idx_to_token
+
+
+if __name__ == '__main__':
+    # simple test
+    import random as rd
+    from os.path import dirname, abspath, join
+
+    filepath = join(dirname(dirname(dirname(abspath(__file__)))), "tokens.lst")
+    tokens_list = read_tokens(filepath)
+    token_to_idx, idx_to_token = create_dictionnaries(tokens_list)
+
+    random_seq = rd.sample(range(len(tokens_list)), 10)
+    print([idx_to_token[i] for i in random_seq])
