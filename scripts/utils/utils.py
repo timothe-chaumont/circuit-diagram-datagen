@@ -1,13 +1,13 @@
 import os
 
 # latex commands around the circuitikz commands
-BEFORE_LATEX = """\\documentclass[convert={density=100}]{standalone}
-\\usepackage{circuitikz}
-\\standaloneenv{circuitikz}
-\\begin{document}
-\\begin{circuitikz}"""
-AFTER_LATEX = """\\end{circuitikz}
-\\end{document}"""
+BEFORE_LATEX = r"""\documentclass[convert={density=100}]{standalone}
+\usepackage{circuitikz}
+\standaloneenv{circuitikz}
+\begin{document}
+\begin{circuitikz}"""
+AFTER_LATEX = r"""\end{circuitikz}
+\end{document}"""
 
 
 def read_tokens(filename="tokens.lst"):
@@ -45,8 +45,10 @@ def segment_list_to_latex(segments_list):
     return BEFORE_LATEX + circuitikz_str + AFTER_LATEX
 
 
-def save_to_latex():
-    pass
+def save_to_latex(latex_string, filename="file") -> None:
+    """Saves string to a .tex file"""
+    with open(f"{filename}.tex", 'w') as f:
+        f.write(latex_string)
 
 
 if __name__ == '__main__':
@@ -61,4 +63,5 @@ if __name__ == '__main__':
 
     gen_circuit = [{'from': (0, 0), 'to': (2, 0), 'type': 'ammeter'}, {'from': (2, 0), 'to': (4, 0), 'type': 'battery1'}, {'from': (0, 2), 'to': (2, 2), 'type': 'short'},
                    {'from': (0, 0), 'to': (0, 2), 'type': 'ammeter'}, {'from': (2, 0), 'to': (2, 2), 'type': 'voltmeter'}, {'from': (2, 2), 'to': (2, 4), 'type': 'short'}, {'from': (2, 4), 'to': (2, 6), 'type': 'short'}]
-    print(segment_list_to_latex(gen_circuit))
+    latex_string = segment_list_to_latex(gen_circuit)
+    save_to_latex(latex_string)
