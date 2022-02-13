@@ -1,3 +1,14 @@
+import os
+
+# latex commands around the circuitikz commands
+BEFORE_LATEX = """\\documentclass[convert={density=100}]{standalone}
+\\usepackage{circuitikz}
+\\standaloneenv{circuitikz}
+\\begin{document}
+\\begin{circuitikz}"""
+AFTER_LATEX = """\\end{circuitikz}
+\\end{document}"""
+
 
 def read_tokens(filename="tokens.lst"):
     """Returns a list of all tokens corresponding
@@ -17,14 +28,37 @@ def create_dictionnaries(tokens):
     return token_to_idx, idx_to_token
 
 
+def segment_list_to_latex(segments_list):
+    """Converts list of elements to latex.
+
+    Generates latex (circuitikz code) for a given descrition of an electrical circuit 
+    Takes a circuit represented by a list of segment as input.
+
+    Args:
+        segments_list: a list of dictionnaries (later objects) describing an electrical circuit.
+
+    Returns:
+        A string representing circuitikz instructions"""
+    circuitikz_str = ""
+    for s in segments_list:
+        circuitikz_str += f"\\draw {s['from']} to[{s['type']}] {s['to']};\n"
+    return BEFORE_LATEX + circuitikz_str + AFTER_LATEX
+
+
+def save_to_latex():
+    pass
+
+
 if __name__ == '__main__':
     # simple test
     import random as rd
     from os.path import dirname, abspath, join
 
+    # read all tokens
     filepath = join(dirname(dirname(dirname(abspath(__file__)))), "tokens.lst")
     tokens_list = read_tokens(filepath)
     token_to_idx, idx_to_token = create_dictionnaries(tokens_list)
 
-    random_seq = rd.sample(range(len(tokens_list)), 10)
-    print([idx_to_token[i] for i in random_seq])
+    gen_circuit = [{'from': (0, 0), 'to': (2, 0), 'type': 'ammeter'}, {'from': (2, 0), 'to': (4, 0), 'type': 'battery1'}, {'from': (0, 2), 'to': (2, 2), 'type': 'short'},
+                   {'from': (0, 0), 'to': (0, 2), 'type': 'ammeter'}, {'from': (2, 0), 'to': (2, 2), 'type': 'voltmeter'}, {'from': (2, 2), 'to': (2, 4), 'type': 'short'}, {'from': (2, 4), 'to': (2, 6), 'type': 'short'}]
+    print(segment_list_to_latex(gen_circuit))
