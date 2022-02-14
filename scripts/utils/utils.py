@@ -51,6 +51,18 @@ def save_to_latex(latex_string, filename="file") -> None:
         f.write(latex_string)
 
 
+def latex_to_jpg(latex_filename="file") -> None:
+    # create a pdf from the latex file
+    os.system(
+        f"latex {latex_filename}.tex -output-format=pdf --interaction=batchmode")
+    # convert them into images
+    os.system(
+        f"gswin64c -dNOPAUSE -sDEVICE=jpeg -r200 -dJPEGQ=60 -sOutputFile={latex_filename}-%03d.jpg {latex_filename}.pdf -dBATCH")
+    # delete unneeded files
+    for extension in ("tex", "aux", "log", "pdf"):
+        os.remove(f"{latex_filename}.{extension}")
+
+
 if __name__ == '__main__':
     # simple test
     import random as rd
@@ -61,7 +73,8 @@ if __name__ == '__main__':
     tokens_list = read_tokens(filepath)
     token_to_idx, idx_to_token = create_dictionnaries(tokens_list)
 
-    gen_circuit = [{'from': (0, 0), 'to': (2, 0), 'type': 'ammeter'}, {'from': (2, 0), 'to': (4, 0), 'type': 'battery1'}, {'from': (0, 2), 'to': (2, 2), 'type': 'short'},
-                   {'from': (0, 0), 'to': (0, 2), 'type': 'ammeter'}, {'from': (2, 0), 'to': (2, 2), 'type': 'voltmeter'}, {'from': (2, 2), 'to': (2, 4), 'type': 'short'}, {'from': (2, 4), 'to': (2, 6), 'type': 'short'}]
+    gen_circuit = [{'from': (0, 0), 'to': (2, 0), 'type': 'ammeter'}, {'from': (2, 0), 'to': (4, 0), 'type': 'battery1'}, {'from': (0, 0), 'to': (0, 6), 'type': 'short'},
+                   {'from': (0, 6), 'to': (4, 6), 'type': 'generic'}, {'from': (4, 6), 'to': (4, 0), 'type': 'short'}]
     latex_string = segment_list_to_latex(gen_circuit)
     save_to_latex(latex_string)
+    latex_to_jpg()

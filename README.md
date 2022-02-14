@@ -2,9 +2,8 @@
 
 Deep-learning model that predicts (CircuiTikz) LaTeX from images of electrical circuits.
 
+## TODO:
 
-
-## TODO :
 - [ ] List all the tokens (by type) used for the first models.
 - [ ] write a script to convert a LaTeX file to images.
 
@@ -12,4 +11,4 @@ Deep-learning model that predicts (CircuiTikz) LaTeX from images of electrical c
 
 - Install LaTeX
 - Install [Ghostscript](https://ghostscript.com/releases/gsdnld.html)
-- Include both bin directories in the *Path* environment variable.
+- Ensure that both `bin` directories in the _Path_ environment variable. (You can verify it by typing `latex --version` and `gswin64c --version`)
