@@ -6,4 +6,4 @@ Deep-learning model that predicts (CircuiTikz) LaTeX from images of electrical c
 
 - Install [LaTeX](https://www.latex-project.org/get/)
 - Install [Ghostscript](https://ghostscript.com/releases/gsdnld.html)
-- Ensure that both _bin_ directories are in the _Path_ environment variable. (You can verify it by typing `latex --version` and `gswin64c --version`)
+- Create a file called _.env_ containing paths to `latex.exe` and `gswin64c.exe` binaries, in the same way as _example.env_ (put double quotes around dirnames that contain spaces).

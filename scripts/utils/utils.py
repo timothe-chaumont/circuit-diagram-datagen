@@ -1,4 +1,6 @@
 import os
+from dotenv import load_dotenv
+
 
 # latex commands around the circuitikz commands
 BEFORE_LATEX = r"""\documentclass[convert={density=100}]{standalone}
@@ -8,6 +10,14 @@ BEFORE_LATEX = r"""\documentclass[convert={density=100}]{standalone}
 \begin{circuitikz}"""
 AFTER_LATEX = r"""\end{circuitikz}
 \end{document}"""
+
+
+def load_env_var():
+    """Returns environment variables from .env file"""
+    load_dotenv()
+    latex_path = os.environ.get('LATEX_PATH')
+    ghostscript_path = os.environ.get('GS_PATH')
+    return latex_path, ghostscript_path
 
 
 def read_tokens(filename="tokens.lst"):
@@ -31,7 +41,7 @@ def create_dictionnaries(tokens):
 def segment_list_to_latex(segments_list):
     """Converts list of elements to latex.
 
-    Generates latex (circuitikz code) for a given descrition of an electrical circuit 
+    Generates latex (circuitikz code) for a given descrition of an electrical circuit
     Takes a circuit represented by a list of segment as input.
 
     Args:
@@ -51,13 +61,13 @@ def save_to_latex(latex_string, filename="file") -> None:
         f.write(latex_string)
 
 
-def latex_to_jpg(latex_filename="file") -> None:
+def latex_to_jpg(latex_filename: str, latex_path: str, ghostscript_path: str) -> None:
     # create a pdf from the latex file
-    os.system(
-        f"latex {latex_filename}.tex -output-format=pdf --interaction=batchmode")
+    os.system(os.path.join(latex_path, "latex") +
+              f" {latex_filename}.tex -output-format=pdf --interaction=batchmode")
     # convert them into images
-    os.system(
-        f"gswin64c -dNOPAUSE -sDEVICE=jpeg -r200 -dJPEGQ=60 -sOutputFile={latex_filename}-%03d.jpg {latex_filename}.pdf -dBATCH")
+    os.system(os.path.join(ghostscript_path, "gswin64c") +
+              f" -dNOPAUSE -sDEVICE=jpeg -r200 -dJPEGQ=60 -sOutputFile={latex_filename}-%03d.jpg {latex_filename}.pdf -dBATCH")
     # delete unneeded files
     for extension in ("tex", "aux", "log", "pdf"):
         os.remove(f"{latex_filename}.{extension}")
@@ -68,6 +78,9 @@ if __name__ == '__main__':
     import random as rd
     from os.path import dirname, abspath, join
 
+    # load env variables from .env file
+    latex_path, ghostscript_path = load_env_var()
+
     # read all tokens
     filepath = join(dirname(dirname(dirname(abspath(__file__)))), "tokens.lst")
     tokens_list = read_tokens(filepath)
@@ -77,4 +90,4 @@ if __name__ == '__main__':
                    {'from': (0, 6), 'to': (4, 6), 'type': 'generic'}, {'from': (4, 6), 'to': (4, 0), 'type': 'short'}]
     latex_string = segment_list_to_latex(gen_circuit)
     save_to_latex(latex_string)
-    latex_to_jpg()
+    latex_to_jpg("file", latex_path, ghostscript_path)
