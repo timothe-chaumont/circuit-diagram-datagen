@@ -55,22 +55,23 @@ def segment_list_to_latex(segments_list):
     return BEFORE_LATEX + circuitikz_str + AFTER_LATEX
 
 
-def save_to_latex(latex_string, filename="file") -> None:
+def save_to_latex(latex_string: str,  save_path: str = "data", filename: str = "file") -> None:
     """Saves string to a .tex file"""
-    with open(f"{filename}.tex", 'w') as f:
+    with open(os.path.join(save_path, f"{filename}.tex"), 'w') as f:
         f.write(latex_string)
 
 
-def latex_to_jpg(latex_filename: str, latex_path: str, ghostscript_path: str) -> None:
+def latex_to_jpg(latex_filename: str, latex_path: str, ghostscript_path: str, save_path: str = "data",) -> None:
+    tex_file_path = os.path.join(save_path, latex_filename)
     # create a pdf from the latex file
     os.system(os.path.join(latex_path, "latex") +
-              f" {latex_filename}.tex -output-format=pdf --interaction=batchmode")
+              f" {tex_file_path}.tex -output-format=pdf --interaction=batchmode --output-directory={save_path} --aux-directory={save_path}")
     # convert them into images
     os.system(os.path.join(ghostscript_path, "gswin64c") +
-              f" -dNOPAUSE -sDEVICE=jpeg -r200 -dJPEGQ=60 -sOutputFile={latex_filename}-%03d.jpg {latex_filename}.pdf -dBATCH")
+              f" -dNOPAUSE -sDEVICE=jpeg -r200 -dJPEGQ=60 -sOutputFile={tex_file_path}-%03d.jpg {tex_file_path}.pdf -dBATCH")
     # delete unneeded files
     for extension in ("tex", "aux", "log", "pdf"):
-        os.remove(f"{latex_filename}.{extension}")
+        os.remove(f"{tex_file_path}.{extension}")
 
 
 if __name__ == '__main__':
