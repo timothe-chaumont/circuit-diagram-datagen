@@ -17,7 +17,7 @@ def generate(nb_images: int, save_to: str) -> None:
     latex_path, ghostscript_path = ut.load_env_var()
 
     for i in range(nb_images):
-        segments_list = gc.generate_one_loop_circuit()
+        segments_list = gc.generate_v2()
         latex_string = ut.segment_list_to_latex(segments_list)
         filename = f"file-{i}"
 
