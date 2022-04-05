@@ -21,7 +21,9 @@ def generate_one_loop_circuit(bipole_tokens=BIPOLE_TOKENS):
           A list of dictionnaries with keys : 
           - "from" : the position of the before node
           - "to" : the position of the after node
-          - "type" : the kind of electrical bipole 
+          - "type" : the kind of electrical bipole
+          - "label" : the legend of the bipole
+        #   - "label_pos" : the position of the legend
     """
     segments_list = []
     nb_vert_segments = 2
@@ -145,7 +147,7 @@ def generate_v2(bipole_tokens=BIPOLE_TOKENS, show_details=False):
     if show_details:
         print(f"Deleted {nb_to_delete} segments")
 
-    # add some bipoles
+    # add some bipoles (and some labels)
     for line in lines_list:
         # important probability of getting a line
         if np.random.rand() < 0.3:
@@ -153,7 +155,11 @@ def generate_v2(bipole_tokens=BIPOLE_TOKENS, show_details=False):
         elif np.random.rand() < 0.2:
             line["type"] = "open"
         else:
-            line["type"] = np.random.choice(BIPOLE_TOKENS)
+            line["type"] = np.random.choice(bipole_tokens)
+
+        # add a few labels
+        if np.random.rand() < 0.3:
+            line["label"] = f"$R_{np.random.randint(0, 9)}$"
 
     return lines_list
 
