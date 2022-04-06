@@ -7,7 +7,7 @@ import scripts.data_generation.generate_circuits as gc
 @click.command()
 @click.option('--nb_images', default=1, help='Number of images to generate')
 @click.option('--save_to', default="data", help="Path where to save the images")
-def generate(nb_images: int, save_to: str) -> None:
+def main(nb_images: int, save_to: str) -> None:
     """Uses various functions to generate circuit data
 
     Args:
@@ -15,9 +15,10 @@ def generate(nb_images: int, save_to: str) -> None:
         save_to (str): Path where to save the generated images
     """
     latex_path, ghostscript_path = ut.load_env_var()
+    circuit_generator = gc.CircuitGenerator()
 
     for i in range(nb_images):
-        segments_list = gc.generate_v2()
+        segments_list = circuit_generator.generate_one_circuit()
         latex_string = ut.segment_list_to_latex(segments_list)
         filename = f"file-{i}"
 
@@ -28,4 +29,4 @@ def generate(nb_images: int, save_to: str) -> None:
 
 
 if __name__ == '__main__':
-    generate()
+    main()

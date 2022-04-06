@@ -52,10 +52,10 @@ def segment_list_to_latex(segments_list):
         A string representing circuitikz instructions"""
     circuitikz_str = ""
     for s in segments_list:
-        if "label" in s:
-            circuitikz_str += f"\\draw {s['from']} to[{s['type']}, l={s['label']}] {s['to']};\n"
+        if s.label:
+            circuitikz_str += f"\\draw {s.from_pos} to[{s.type}, l={s.label}] {s.to_pos};\n"
         else:
-            circuitikz_str += f"\\draw {s['from']} to[{s['type']}] {s['to']};\n"
+            circuitikz_str += f"\\draw {s.from_pos} to[{s.type}] {s.to_pos};\n"
     return BEFORE_LATEX + circuitikz_str + AFTER_LATEX
 
 
