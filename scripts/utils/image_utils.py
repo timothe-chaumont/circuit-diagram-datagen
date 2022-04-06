@@ -6,7 +6,10 @@ WHITE = 255
 
 
 def read_image(img: str) -> np.ndarray:
-    return cv2.imread(img, cv2.IMREAD_GRAYSCALE)
+    img_file = cv2.imread(img, cv2.IMREAD_GRAYSCALE)
+    if img_file is None:
+        raise FileNotFoundError(f"Image '{img}' not found.")
+    return img_file
 
 
 def pad_image(img: np.ndarray, output_size: Tuple[int, int] = (1000, 1000)) -> np.ndarray:
@@ -47,8 +50,8 @@ def pad_to_square(img: np.ndarray, border: int = 50) -> np.ndarray:
     return new_img
 
 
-def resize_image(img: np.ndarray) -> np.ndarray:
-    return cv2.resize(img, (300, 300), interpolation=cv2.INTER_LANCZOS4)
+def resize_image(img: np.ndarray, res_size=(256, 256)) -> np.ndarray:
+    return cv2.resize(img, res_size, interpolation=cv2.INTER_LANCZOS4)
 
 
 def show_image(img: np.ndarray, title: str = "Image") -> None:
@@ -56,8 +59,13 @@ def show_image(img: np.ndarray, title: str = "Image") -> None:
     cv2.waitKey(0)
 
 
+def save_image(img: np.ndarray, output_path: str) -> None:
+    cv2.imwrite(output_path, img)
+
+
 if __name__ == '__main__':
     img_path = r"..\..\data\file-0-001.jpg"
     img = pad_to_square(read_image(img_path))
     img = resize_image(img)
+    save_image(img, r"..\..\data\file-0-001_resized.jpg")
     show_image(img)

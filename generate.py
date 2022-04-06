@@ -1,6 +1,8 @@
 import click
+import os
 
 import scripts.utils.utils as ut
+import scripts.utils.image_utils as iu
 import scripts.data_generation.generate_circuits as gc
 
 
@@ -24,6 +26,12 @@ def main(nb_images: int, save_to: str) -> None:
 
         ut.save_to_latex(latex_string, save_to, filename)
         ut.latex_to_jpg(filename, latex_path, ghostscript_path, save_to)
+        # pad, resize and save the image
+        img_path = os.path.join(save_to, f"{filename}.jpg")
+        img = iu.read_image(img_path)
+        img = iu.pad_to_square(img, border=50)
+        img = iu.resize_image(img)
+        iu.save_image(img, img_path)
 
     click.echo(f"Generated {nb_images} images.")
 

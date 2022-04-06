@@ -72,7 +72,7 @@ def latex_to_jpg(latex_filename: str, latex_path: str, ghostscript_path: str, sa
               f" {tex_file_path}.tex -output-format=pdf --interaction=batchmode --output-directory={save_path} --aux-directory={save_path}")
     # convert them into images
     call(os.path.join(ghostscript_path, "gswin64c") +
-         f" -dNOPAUSE -sDEVICE=jpeg -r200 -dJPEGQ=60 -sOutputFile={tex_file_path}-%03d.jpg {tex_file_path}.pdf -dBATCH -dQUIET", stdout=DEVNULL)
+         f" -dNOPAUSE -sDEVICE=jpeg -r200 -dJPEGQ=60 -sOutputFile={tex_file_path}.jpg {tex_file_path}.pdf -dBATCH -dQUIET", stdout=DEVNULL)
     # os.system(os.path.join(ghostscript_path, "gswin64c") +
     #           f" -dNOPAUSE -sDEVICE=jpeg -r200 -dJPEGQ=60 -sOutputFile={tex_file_path}-%03d.jpg {tex_file_path}.pdf -dBATCH")
     # delete unneeded files
