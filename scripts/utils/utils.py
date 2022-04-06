@@ -1,3 +1,4 @@
+import hashlib
 import os
 from dotenv import load_dotenv
 from subprocess import call, DEVNULL
@@ -78,6 +79,11 @@ def latex_to_jpg(latex_filename: str, latex_path: str, ghostscript_path: str, sa
     # delete unneeded files
     for extension in ("tex", "aux", "log", "pdf"):
         os.remove(f"{tex_file_path}.{extension}")
+
+
+def get_image_name(circuit_latex_string: str) -> str:
+    name = hashlib.sha1(circuit_latex_string.encode('utf-8')).hexdigest()[:15]
+    return name
 
 
 if __name__ == '__main__':

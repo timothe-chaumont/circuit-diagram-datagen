@@ -22,7 +22,7 @@ def main(nb_images: int, save_to: str) -> None:
     for i in range(nb_images):
         segments_list = circuit_generator.generate_one_circuit()
         latex_string = ut.segment_list_to_latex(segments_list)
-        filename = f"file-{i}"
+        filename = ut.get_image_name(latex_string)
 
         ut.save_to_latex(latex_string, save_to, filename)
         ut.latex_to_jpg(filename, latex_path, ghostscript_path, save_to)
@@ -30,7 +30,7 @@ def main(nb_images: int, save_to: str) -> None:
         img_path = os.path.join(save_to, f"{filename}.jpg")
         img = iu.read_image(img_path)
         img = iu.pad_to_square(img, border=50)
-        img = iu.resize_image(img)
+        img = iu.resize_image(img, (350, 350))
         iu.save_image(img, img_path)
 
     click.echo(f"Generated {nb_images} images.")
