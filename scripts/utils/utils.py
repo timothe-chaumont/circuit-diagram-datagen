@@ -45,6 +45,7 @@ def segment_list_to_latex(segments_list):
 
     Generates latex (circuitikz code) for a given descrition of an electrical circuit
     Takes a circuit represented by a list of segment as input.
+    Returns only the cirsuit part, not the latex code around
 
     Args:
         segments_list: a list of dictionnaries (later objects) describing an electrical circuit.
@@ -54,10 +55,10 @@ def segment_list_to_latex(segments_list):
     circuitikz_str = ""
     for s in segments_list:
         if s.label:
-            circuitikz_str += f"\\draw {s.from_pos} to[{s.type}, l={s.label}] {s.to_pos};\n"
+            circuitikz_str += f"\\draw {s.from_pos} to[{s.type}, l={s.label}] {s.to_pos}; "
         else:
-            circuitikz_str += f"\\draw {s.from_pos} to[{s.type}] {s.to_pos};\n"
-    return BEFORE_LATEX + circuitikz_str + AFTER_LATEX
+            circuitikz_str += f"\\draw {s.from_pos} to[{s.type}] {s.to_pos}; "
+    return circuitikz_str
 
 
 def save_to_latex(latex_string: str,  save_path: str = "data", filename: str = "file") -> None:
@@ -74,8 +75,6 @@ def latex_to_jpg(latex_filename: str, latex_path: str, ghostscript_path: str, sa
     # convert them into images
     call(os.path.join(ghostscript_path, "gswin64c") +
          f" -dNOPAUSE -sDEVICE=jpeg -r200 -dJPEGQ=60 -sOutputFile={tex_file_path}.jpg {tex_file_path}.pdf -dBATCH -dQUIET", stdout=DEVNULL)
-    # os.system(os.path.join(ghostscript_path, "gswin64c") +
-    #           f" -dNOPAUSE -sDEVICE=jpeg -r200 -dJPEGQ=60 -sOutputFile={tex_file_path}-%03d.jpg {tex_file_path}.pdf -dBATCH")
     # delete unneeded files
     for extension in ("tex", "aux", "log", "pdf"):
         os.remove(f"{tex_file_path}.{extension}")
