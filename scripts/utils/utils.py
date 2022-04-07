@@ -85,6 +85,18 @@ def get_image_name(circuit_latex_string: str) -> str:
     return name
 
 
+def create_dir_if_not_exists(path: str) -> None:
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+
+def create_file_if_not_exists(path: str) -> None:
+    if not os.path.exists(path):
+        # create one
+        with open(path, "w"):
+            pass
+
+
 if __name__ == '__main__':
     # simple test
     import random as rd
