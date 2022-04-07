@@ -21,6 +21,19 @@ def main(nb_images: int, save_to: str) -> None:
     images_folder_path = os.path.join(save_to, "circuit_images")
     generator_version = "basic"
 
+    # if there is no data folder, create one
+    if not os.path.exists(save_to):
+        os.mkdir(save_to)
+
+    # check if the file exists (move to a util function)
+    if not os.path.exists(os.path.join(save_to, "circuitikz_code.lst")):
+        # create one
+        with open(os.path.join(save_to, "circuitikz_code.lst"), "w"):
+            pass
+
+    if not os.path.exists(images_folder_path):
+        os.mkdir(images_folder_path)
+
     for i in range(nb_images):
         segments_list = circuit_generator.generate_one_circuit()
         latex_string = ut.segment_list_to_latex(segments_list)
