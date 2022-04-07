@@ -54,10 +54,10 @@ def segment_list_to_latex(segments_list) -> str:
         A string representing circuitikz instructions"""
     circuitikz_str = ""
     for s in segments_list:
-        circuitikz_str += f"\\draw {str(s.from_pos).replace(' ', '')} to[{s.type}"
+        circuitikz_str += f"\\draw {s.from_pos} to[{s.type}"
         if s.label:
             circuitikz_str += f", l={s.label}"
-        circuitikz_str += f"] {str(s.to_pos).replace(' ', '')} ; "
+        circuitikz_str += f"] {s.to_pos}; "
     return circuitikz_str
 
 
