@@ -19,6 +19,7 @@ def main(nb_images: int, save_to: str) -> None:
     latex_path, ghostscript_path = ut.load_env_var()
     circuit_generator = gc.CircuitGenerator()
     images_folder_path = os.path.join(save_to, "circuit_images")
+    generator_version = "basic"
 
     for i in range(nb_images):
         segments_list = circuit_generator.generate_one_circuit()
@@ -46,7 +47,7 @@ def main(nb_images: int, save_to: str) -> None:
 
         # save its name and line TODO
         with open(os.path.join(save_to, "circuit2latex_train.lst"), "a") as f:
-            f.write(f"{line_number} {filename}\n")
+            f.write(f"{line_number} {filename} {generator_version}\n")
 
         # save the formula
         with open(os.path.join(save_to, "circuitikz_code.lst"), "a") as f:

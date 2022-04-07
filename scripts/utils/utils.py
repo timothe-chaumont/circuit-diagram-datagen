@@ -40,12 +40,12 @@ def create_dictionnaries(tokens):
     return token_to_idx, idx_to_token
 
 
-def segment_list_to_latex(segments_list):
+def segment_list_to_latex(segments_list) -> str:
     """Converts list of elements to latex.
 
     Generates latex (circuitikz code) for a given descrition of an electrical circuit
     Takes a circuit represented by a list of segment as input.
-    Returns only the cirsuit part, not the latex code around
+    Returns only the cirsuit part, not the necessary Latex code around it.
 
     Args:
         segments_list: a list of dictionnaries (later objects) describing an electrical circuit.
@@ -54,10 +54,10 @@ def segment_list_to_latex(segments_list):
         A string representing circuitikz instructions"""
     circuitikz_str = ""
     for s in segments_list:
+        circuitikz_str += f"\\draw {s.from_pos} to[{s.type}"
         if s.label:
-            circuitikz_str += f"\\draw {s.from_pos} to[{s.type}, l={s.label}] {s.to_pos}; "
-        else:
-            circuitikz_str += f"\\draw {s.from_pos} to[{s.type}] {s.to_pos}; "
+            circuitikz_str += f", l={s.label}"
+        circuitikz_str += f"] {s.to_pos} ; "
     return circuitikz_str
 
 

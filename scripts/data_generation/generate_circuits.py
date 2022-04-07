@@ -1,16 +1,28 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
-from typing import List, Tuple, Union, Set, Optional
+from typing import List, Set, Dict, Tuple, Union, Optional
 from typing_extensions import Literal
 
 # later : use objects instead of dictionnaries
 
-BIPOLE_TOKENS = ["short", "open", "generic",
-                 "capacitor", "cute inductor",
-                 "battery1", "european voltage source", "european current source",
-                 "ammeter", "voltmeter",
-                 "normal open switch"]
+BIPOLE_TOKENS: List[str] = ["generic",
+                            "capacitor", "cute inductor",
+                            "normal open switch"]
+
+SOURCES_BIPOLES: List[str] = ["battery1",
+                              "european voltage source", "european current source"]
+
+MEASURE_BIPOLES: List[str] = ["ammeter", "voltmeter"]
+
+
+class Bipole:
+    def __init__(self, name: str, legends: List[str]) -> None:
+        self.name: str = name
+        self.legends: List[str] = legends
+
+    def __str__(self) -> str:
+        self.name
 
 
 class Segment:
@@ -51,12 +63,23 @@ class Segment:
 
 
 class CircuitGenerator:
-    def __init__(self, p_label: float = 0.1) -> None:
+    def __init__(self, p_remove_inside_segment: float = 0.1, p_remove_outline_segment: float = 0.05,
+                 p_line: float = 0.4, p_source: float = 0.1, p_measure: float = 0.1, p_label: float = 0.5) -> None:
         """Choose probabilities for various aspects of the circuits we generate.
 
             Args:
-                p_label (float): probability of a segment having a label.
+                p_line (float): probability of having a line instaed of a bipole
+                p_remove_inside_segment (float): probability of removing a segment inside the circuit
+                p_label (float): probability of a bipole to have a label.
         """
+        # set probabilitites
+        # of removing segmentsfrom the initial grid
+        self.p_remove_inside_segment: float = p_remove_inside_segment
+        self.p_remove_outline_segment: float = p_remove_outline_segment
+        # of placing various types of bipoles
+        self.p_line: float = p_line
+        self.p_source: float = p_source
+        self.p_measure: float = p_measure
         self.p_label: float = p_label
         self.segments: Set[Segment] = set()
 
@@ -169,17 +192,24 @@ class CircuitGenerator:
             )
         return outside_segments
 
-    def add_elements(self) -> None:
+    def add_bipoles(self) -> None:
+        """Add bipoles with a certain probability for each class.
+           Later : add labels and indications to the bipoles.
+        """
         for segment in self.segments:
             # choose an element
+            rand_nb = np.random.rand()
             # possibly add a label, and choose its position
-            # important probability of getting a line
-            if np.random.rand() < 0.3:
+            if rand_nb < self.p_line:
                 segment.type = "short"
-            # elif np.random.rand() < 0.2:
-            #     segment["type"] = "open"
+            # with some probability, add a source
+            elif rand_nb < self.p_line + self.p_source:
+                segment.type = np.random.choice(SOURCES_BIPOLES)
+            elif rand_nb < self.p_line + self.p_source + self.p_measure:
+                segment.type = np.random.choice(MEASURE_BIPOLES)
             else:
                 segment.type = np.random.choice(BIPOLE_TOKENS)
+                # possibly add a label
 
     def generate_one_circuit(self) -> Set[Segment]:
         """Generates a circuit in the form of a list of segments.
@@ -205,177 +235,24 @@ class CircuitGenerator:
         inside_segments = self.get_inside_segments(
             nb_vert_lines, nb_horiz_lines, nb_horiz_spaces, nb_vert_spaces)
 
-        # later: remove some of these inside segments
+        # remove some of these inside segments
+        for segment in tuple(inside_segments):
+            if np.random.rand() < self.p_remove_inside_segment:
+                inside_segments.remove(segment)
 
         outline_segments = self.get_outside_segments(
             nb_horiz_spaces, nb_vert_spaces)
 
+        # remove a few outline segments
+        for segment in tuple(outline_segments):
+            if np.random.rand() < self.p_remove_outline_segment:
+                outline_segments.remove(segment)
+
         self.segments = inside_segments | outline_segments
         # add elements to all segments
-        self.add_elements()
+        self.add_bipoles()
 
         return self.segments
-
-
-def generate_one_loop_circuit(bipole_tokens=BIPOLE_TOKENS):
-    """Generates an eletrical circuit in the form of a list of bipole elements
-       The generated circuits are composed of one single loop
-
-       generate a random size for corresponding segments, and then generate a random number of elements
-
-       Returns:
-          A list of dictionnaries with keys : 
-          - "from" : the position of the before node
-          - "to" : the position of the after node
-          - "type" : the kind of electrical bipole
-          - "label" : the legend of the bipole
-        #   - "label_pos" : the position of the legend
-    """
-    segments_list = []
-    nb_vert_segments = 2
-    nb_horiz_segments = 2
-    # generate the 'shape' of the circuit
-    vert_max_nb_elts, horiz_max_nb_elts = np.random.randint(1, 4, size=2)
-    # we can deduce the width and height of the circuit
-    circuit_width = 2 * horiz_max_nb_elts
-    circuit_height = 2 * vert_max_nb_elts
-
-    # bottom & top segments
-    for s in range(nb_horiz_segments):
-        y_pos = 2*s
-        nb_elements = np.random.randint(1, horiz_max_nb_elts+1)
-        # deduce, from this number, the spacing between each bipole
-        segment_lenth = int(circuit_width / nb_elements)
-        for e in range(nb_elements):
-            bipole = np.random.choice(bipole_tokens)
-            element = {"from": (segment_lenth*e, y_pos), "to": (segment_lenth*e +
-                                                                segment_lenth, y_pos), "type": bipole}
-            # print(element)
-            segments_list.append(element)
-
-    # left & right segment
-    for s in range(nb_vert_segments):
-        x_pos = 2*s
-        nb_elements = np.random.randint(1, vert_max_nb_elts+1)
-        segment_lenth = int(circuit_height / nb_elements)
-        for e in range(nb_elements):
-            bipole = np.random.choice(bipole_tokens)
-            element = {"from": (x_pos, segment_lenth*e),
-                       "to": (x_pos, segment_lenth*e + segment_lenth),
-                       "type": bipole}
-            # print(element)
-            segments_list.append(element)
-
-    # end segments
-
-    return segments_list
-    # degub with tests (display position of each element)
-
-
-def get_horizontal_lines(y_pos, horiz_spaces):
-    """
-    """
-    lines_list = []
-    # x starts at 0 and increases to the right
-    current_x_pos = 0
-    # for each segment (we go through each size)
-    for x_space in horiz_spaces:
-        start_x = current_x_pos
-        end_x = start_x + x_space
-
-        lines_list.append(
-            {"from": (start_x, y_pos), "to": (end_x, y_pos)}
-        )
-
-        # update the new starting point
-        current_x_pos = end_x
-
-    return lines_list
-
-
-def get_vertical_lines(y_start, y_end, horiz_spaces):
-    lines_list = []
-    # x starts at 0 and increases to the right
-    current_x_pos = 0
-    # for each segment (we go through each size)
-    for x_space in horiz_spaces:
-        lines_list.append(
-            {"from": (current_x_pos, y_start), "to": (current_x_pos, y_end)}
-        )
-
-        # update the new starting point
-        current_x_pos += x_space
-    lines_list.append(
-        {"from": (current_x_pos, y_start), "to": (current_x_pos, y_end)}
-    )
-    return lines_list
-
-
-def generate_v2(bipole_tokens=BIPOLE_TOKENS, show_details=False):
-    """ Generates a circuit (in the form of a ~graph) by generating a table and removing some of its lines.
-        TODO
-        Possible improvement : merge lines that are not cut
-        Generate the inner lines first and delete some of them
-        Generate the outer lines second and keep them
-
-        Returns:
-          A list of dictionnaries with keys : 
-          - "from" : the position of the before node
-          - "to" : the position of the after node
-          - "type" : the kind of electrical bipole
-          - "label" : the legend of the bipole
-        #   - "label_pos" : the position of the legend
-    """
-    # generate the number of lines
-    nb_vert_segments, nb_horiz_segments = np.random.randint(2, 5, size=2)
-
-    # generate spaces between points
-    nb_horiz_spaces = np.random.randint(2, 4, size=nb_vert_segments-1)
-    nb_vert_spaces = np.random.randint(2, 4, size=nb_horiz_segments-1)
-    if show_details:
-        print("spaces", nb_horiz_spaces, nb_vert_spaces)
-
-    # first : horizontal lines
-    lines_list = []
-    current_y_pos = 0
-    for y_space in nb_vert_spaces:
-        start_y = current_y_pos
-        end_y = current_y_pos + y_space
-        current_y_pos = end_y
-
-        h_lines = get_horizontal_lines(start_y, nb_horiz_spaces)
-        lines_list.extend(h_lines)
-
-        v_lines = get_vertical_lines(start_y, end_y, nb_horiz_spaces)
-        lines_list.extend(v_lines)
-
-    # add last horizontal line
-    h_lines = get_horizontal_lines(current_y_pos, nb_horiz_spaces)
-    lines_list.extend(h_lines)
-
-    # delete randomly some segments
-    nb_to_delete = np.random.randint(0, len(lines_list)//3)
-    lines_to_delete = np.random.randint(0, len(lines_list), size=nb_to_delete)
-    lines_list = [lines_list[i]
-                  for i in range(len(lines_list)) if i not in lines_to_delete]
-    if show_details:
-        print(f"Deleted {nb_to_delete} segments")
-
-    # add some bipoles (and some labels)
-    for line in lines_list:
-        # important probability of getting a line
-        if np.random.rand() < 0.3:
-            line["type"] = "short"
-        elif np.random.rand() < 0.2:
-            line["type"] = "open"
-        else:
-            line["type"] = np.random.choice(bipole_tokens)
-
-        # add a few labels
-        if np.random.rand() < 0.3:
-            line["label"] = f"$R_{np.random.randint(0, 9)}$"
-
-    return lines_list
 
 
 def display_circuit(segments_list, save=False):
