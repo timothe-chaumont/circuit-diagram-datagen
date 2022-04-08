@@ -1,4 +1,7 @@
-dotenv
+python-dotenv
 click
 numpy
-cv2
+pandas
+opencv-python
+torch
+torchvision
