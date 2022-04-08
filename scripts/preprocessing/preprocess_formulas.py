@@ -1,5 +1,7 @@
 from typing import List, Tuple
 import re
+import torch
+import logging
 
 
 class Vocabulary:
@@ -9,6 +11,8 @@ class Vocabulary:
         self.idx_to_word = {0: '<PAD>', 1: '<SOS>', 2: '<EOS>', 3: '<UNK>'}
         self.word_to_idx = {word: idx
                             for idx, word in self.idx_to_word.items()}
+        # default tensor data type used for the formulas
+        self.dtype: torch.dtype = torch.uint8
 
     def build_vocaulary(self, file_path: str) -> None:
         """From a text file containing formulas, tokenize them and return a list of tokens + UNK, PAD, EOS, SOS...
@@ -28,7 +32,13 @@ class Vocabulary:
             tokens.update(tokenized_formula)
             if len(tokenized_formula) > max_length:
                 max_length = len(tokenized_formula)
+
         self.formula_max_length = max_length + 2  # +2 for SOS and EOS
+        # if the indexes cannot be represented with an
+        if self.formula_max_length > 255:
+            logging.info('Using uint16 as torch.tensor dtype.')
+            # max value : 32767
+            self.dtype = torch.int16
 
         # add the tokens to the vocabulary
         for token in sorted(list(tokens)):
@@ -48,9 +58,10 @@ class Vocabulary:
         nb_pads = self.formula_max_length - len(tokens_list) - 2
         return ['<SOS>'] + tokens_list + ['<EOS>'] + ['<PAD>'] * nb_pads
 
-    def numericalize(self, tokens_list: List[str]) -> List[int]:
-        """Convert the list of words to a list of indices"""
-        return [self.word_to_idx[word] for word in tokens_list]
+    def numericalize(self, tokens_list: List[str]) -> torch.Tensor:
+        """Convert the list of words to a tensor of indices
+        """
+        return torch.tensor(tuple(self.word_to_idx[word] for word in tokens_list), dtype=self.dtype)
 
     def preprocess_formula(self, formula: str) -> List[int]:
         """Processes the latex formula to be used to train a model.
@@ -60,4 +71,3 @@ class Vocabulary:
         padded_formula = self.pad(tokens)
         num_formula = self.numericalize(padded_formula)
         return num_formula
-        
