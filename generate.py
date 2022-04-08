@@ -52,8 +52,8 @@ def main(nb_images: int, save_to: str) -> None:
                 if line == "\n":
                     break
 
-        # save its name and line TODO
-        with open(os.path.join(save_to, "circuit2latex_train.lst"), "a") as f:
+        # save its name and line
+        with open(os.path.join(save_to, "circuit2latex.lst"), "a") as f:
             f.write(f"{line_number} {filename} {generator_version}\n")
 
         # save the formula
