@@ -1,6 +1,7 @@
 from typing import List, Tuple
 import re
 import torch
+import torch.nn.functional as F
 import logging
 
 
@@ -66,11 +67,25 @@ class Vocabulary:
             tuple(self.word_to_idx[word] for word in tokens_list), dtype=self.dtype
         )
 
-    def preprocess_formula(self, formula: str) -> List[int]:
+    def one_hot_encode(self, numeric_tokens_list: torch.Tensor) -> torch.Tensor:
+        """Convert the list of words to a one hot encoded tensor"""
+        return F.one_hot(numeric_tokens_list, num_classes=len(self))
+
+    def preprocess_formula(self, formula: str) -> torch.Tensor:
         """Processes the latex formula to be used to train a model.
         tokenizes, then pads, then converts it into a vector
         """
         tokens = self.basic_tokenize(formula)
         padded_formula = self.pad(tokens)
         num_formula = self.numericalize(padded_formula)
-        return num_formula
+        encoded_tokens_formula = self.one_hot_encode(num_formula)
+        return encoded_tokens_formula
+
+    def get_encoded_token(self, str_token: str) -> torch.Tensor:
+        """Returns the one hot encoded vector corresponding to a single token
+
+        e.g. get_encoded_token('<PAD>') = tensor([1., 0., ..., 0.])
+        """
+        num_token = self.numericalize([str_token])
+        encoded_token = self.one_hot_encode(num_token)
+        return encoded_token.squeeze()
