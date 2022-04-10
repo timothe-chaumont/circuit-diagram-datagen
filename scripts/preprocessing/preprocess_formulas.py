@@ -62,13 +62,13 @@ class Vocabulary:
         return ["<SOS>"] + tokens_list + ["<EOS>"] + ["<PAD>"] * nb_pads
 
     def numericalize(self, tokens_list: List[str]) -> torch.Tensor:
-        """Convert the list of words to a tensor of indices"""
+        """Convert the list of words to a tensor of token indices"""
         return torch.tensor(
             tuple(self.word_to_idx[word] for word in tokens_list), dtype=self.dtype
         )
 
     def one_hot_encode(self, numeric_tokens_list: torch.Tensor) -> torch.Tensor:
-        """Convert the list of words to a one hot encoded tensor"""
+        """Convert the tensor of token ids to a one hot encoded tensor"""
         return F.one_hot(numeric_tokens_list, num_classes=len(self))
 
     def preprocess_formula(self, formula: str) -> torch.Tensor:
@@ -81,11 +81,21 @@ class Vocabulary:
         encoded_tokens_formula = self.one_hot_encode(num_formula)
         return encoded_tokens_formula
 
-    def get_encoded_token(self, str_token: str) -> torch.Tensor:
-        """Returns the one hot encoded vector corresponding to a single token
+    def get_encoded_token(self, tokens: str | int | torch.Tensor) -> torch.Tensor:
+        """Returns the one hot encoded vector corresponding to the token(s) given as input
 
         e.g. get_encoded_token('<PAD>') = tensor([1., 0., ..., 0.])
         """
-        num_token = self.numericalize([str_token])
-        encoded_token = self.one_hot_encode(num_token)
-        return encoded_token.squeeze()
+        # if only one str token :
+        if isinstance(tokens, str):
+            ids_tensor_token = self.numericalize([tokens])
+
+        elif isinstance(tokens, int):
+            ids_tensor_token = torch.tensor([tokens])
+
+        # if it is already a tensor of token id's
+        elif isinstance(tokens, torch.Tensor):
+            ids_tensor_token = tokens
+
+        encoded_tokens = self.one_hot_encode(ids_tensor_token)
+        return encoded_tokens.squeeze().to(dtype=torch.float)
