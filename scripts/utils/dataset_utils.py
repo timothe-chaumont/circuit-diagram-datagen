@@ -18,7 +18,7 @@ class CustomCircuitDataset(Dataset):
         formulas_file: str,
         img_dir: str,
         transform=T.Lambda(lambda t: t / 255),  # normalize the image to [0, 1]
-        target_transform=F.one_hot,  # convert the label to one-hot vector
+        target_transform=None,
     ):
         # read formula line, image name and version
         self.circuit_data = pd.read_csv(annotations_file, sep=" ", header=None)
@@ -55,5 +55,5 @@ class CustomCircuitDataset(Dataset):
         if self.transform:
             image = self.transform(image)
         if self.target_transform:
-            formula = self.target_transform(formula, len(self.vocab))
+            formula = self.target_transform(formula)
         return image, formula
