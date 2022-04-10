@@ -79,7 +79,7 @@ class Vocabulary:
         padded_formula = self.pad(tokens)
         num_formula = self.numericalize(padded_formula)
         encoded_tokens_formula = self.one_hot_encode(num_formula)
-        return encoded_tokens_formula
+        return encoded_tokens_formula.to(dtype=torch.float)
 
     def get_encoded_token(self, tokens: str | int | torch.Tensor) -> torch.Tensor:
         """Returns the one hot encoded vector corresponding to the token(s) given as input
