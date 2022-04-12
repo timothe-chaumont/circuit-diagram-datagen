@@ -3,7 +3,6 @@ import os
 import torch
 from torch.utils.data import DataLoader
 import logging
-from tqdm import tqdm
 
 from src.models.decoder import TextDecoder
 from src.models.encoder import ImageEncoder
@@ -90,6 +89,19 @@ def main(
     # save the trained models
     torch.save(encoder, os.path.join("trained_models", "encoder.pt"))
     torch.save(decoder, os.path.join("trained_models", "decoder.pt"))
+
+    # get one batch of data
+    # train_features, train_labels = next(iter(dataloader))
+    # enc_output = encoder(train_features)
+    # dec_output = decoder(enc_output)
+    # print(dec_output)
+
+    # label = train_labels[0]
+    # plt.imshow(img, cmap="gray")
+    # plt.show()
+    # print(f"Label: {label}")
+    # encoder = ImageEncoder()
+    # decoder = Decoder(input_dim=10, vocab_size=10)
 
 
 if __name__ == "__main__":
