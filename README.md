@@ -1,6 +1,7 @@
-# circuit-to-latex
+# Circuit-diagram-datagen
 
-Deep-learning model that predicts [CircuiTikz](https://ctan.org/pkg/circuitikz) (LaTeX) from images of electrical circuits.
+Python script that generates circuit diagrams data : [CircuiTikz](https://ctan.org/pkg/circuitikz) (LaTeX) and the corresponding image.
+Its purpose is to create data to train machine learning models.
 
 ## Steps to generate data (Windows)
 
@@ -10,6 +11,7 @@ Deep-learning model that predicts [CircuiTikz](https://ctan.org/pkg/circuitikz) 
 4. Create a file called _.env_ containing paths to `latex.exe` and `gswin64c.exe` binaries, in the same way as [_example.env_](/example.env).
 5. Run `make generate` in a cmd window from the root directory
 
-## To start the training 
-1. (Create a virtual environment and) install the dependencies with `make install`
-2. Run `make train` in a cmd window from the root directory
+---
+The [circuit-to-latex](https://github.com/tim99oth99e/circuit-to-latex) repo contains implementation of Deep Learning models that predicts the LaTeX code that corresponds to a given circuit diagram image. 
+
+from images of electrical circuits.
