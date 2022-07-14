@@ -1,4 +1,4 @@
-# Circuit-diagram-datagen
+# Circuit Diagram Datagen
 
 Python script that generates circuit diagrams data : [CircuiTikz](https://ctan.org/pkg/circuitikz) (LaTeX) and the corresponding image.
 
