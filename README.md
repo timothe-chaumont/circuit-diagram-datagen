@@ -1,11 +1,12 @@
 # Circuit-diagram-datagen
 
 Python script that generates circuit diagrams data : [CircuiTikz](https://ctan.org/pkg/circuitikz) (LaTeX) and the corresponding image.
-Its purpose is to create data to train machine learning models.
+
+_Its purpose is to create data to train machine learning models._
 
 ## Steps to generate data (Windows)
 
-1. (Create a virtual environment and) install the dependencies with `make install`
+1. Install the dependencies with `make install` (possibly in a virtual environment)
 2. Install [LaTeX](https://www.latex-project.org/get/)
 3. Install [Ghostscript](https://ghostscript.com/releases/gsdnld.html)
 4. Create a file called _.env_ containing paths to `latex.exe` and `gswin64c.exe` binaries, in the same way as [_example.env_](/example.env).
