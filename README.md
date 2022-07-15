@@ -4,6 +4,10 @@ Python script that generates circuit diagrams data : [CircuiTikz](https://ctan.o
 
 _Its purpose is to create data to train machine learning models._
 
+![Example of one generated circuit](/generated_data_example.png)
+_Example of a generated diagram._
+
+
 ## Steps to generate data (Windows)
 
 1. Install the dependencies with `make install` (possibly in a virtual environment)
